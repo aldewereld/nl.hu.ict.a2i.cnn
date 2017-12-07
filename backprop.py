@@ -28,8 +28,6 @@ def forward(inputs,weights,function=sigmoid,step=-1):
 def backprop(inputs, outputs, weights, function=sigmoid, derivative=derivative_sigmoid, eta=0.01):
     """
     Function to calculate deltas matrix based on gradient descent / backpropagation algorithm.
-    Deltas matrix represents the changes that are needed to be performed to the weights (per layer) to
-    improve the performance of the neural net.
     :param inputs: (numpy) array representing the input vector.
     :param outputs:  (numpy) array representing the output vector.
     :param weights:  list of numpy arrays (matrices) that represent the weights per layer.
@@ -43,14 +41,15 @@ def backprop(inputs, outputs, weights, function=sigmoid, derivative=derivative_s
     deltas = []
     layers = len(weights) # set current layer to output layer
     a_now = forward(inputs, weights, function, layers) # activation on current layer
-    error = np.array(derivative(a_now)*(outputs - a_now)) # calculate error on output
-    a_prev = forward(inputs, weights, function, layers - 1) # activation of previous layer
-    for i in range(1,len(weights)+1):
-        delta = np.array(eta * error*np.append(1,a_prev)) # calculate adjustments to weights
-        deltas.insert(0, delta) # store adjustments
-        a_now = a_prev # move one layer backwards
+    for i in range(0, layers):
         a_prev = forward(inputs, weights, function, layers-i-1) # calculate activation of previous layer
-        error = derivative(np.append(1, a_now))*error*weights[-i] # calculate error on current layer
+        if i == 0:
+            error = np.array(derivative(a_now) * (outputs - a_now))  # calculate error on output
+        else:
+            error = derivative(a_now) * (weights[-i].T).dot(error)[1:] # calculate error on current layer
+        delta = eta * np.expand_dims(np.append(1, a_prev), axis=1) * error # calculate adjustments to weights
+        deltas.insert(0, delta.T) # store adjustments
+        a_now = a_prev # move one layer backwards
 
     return deltas
 

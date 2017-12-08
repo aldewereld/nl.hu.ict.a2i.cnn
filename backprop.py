@@ -28,6 +28,8 @@ def forward(inputs,weights,function=sigmoid,step=-1):
 def backprop(inputs, outputs, weights, function=sigmoid, derivative=derivative_sigmoid, eta=0.01):
     """
     Function to calculate deltas matrix based on gradient descent / backpropagation algorithm.
+    Deltas matrix represents the changes that are needed to be performed to the weights (per layer) to
+    improve the performance of the neural net.
     :param inputs: (numpy) array representing the input vector.
     :param outputs:  (numpy) array representing the output vector.
     :param weights:  list of numpy arrays (matrices) that represent the weights per layer.
